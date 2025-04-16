@@ -1,6 +1,6 @@
 /******************************************************************
  *
- *   ADD YOUR NAME / SECTION NUMBER HERE
+ *   Francis Olakangil / Section 001
  *
  *   This java file contains the problem solutions of canFinish and
  *   numGroups methods.
@@ -72,18 +72,51 @@ class ProblemSolutions {
      * @return boolean          - True if all exams can be taken, else false.
      */
 
-    public boolean canFinish(int numExams, 
-                             int[][] prerequisites) {
+    public boolean canFinish(int numExams, int[][] prerequisites) {
       
         int numNodes = numExams;  // # of nodes in graph
 
         // Build directed graph's adjacency list
-        ArrayList<Integer>[] adj = getAdjList(numExams, 
-                                        prerequisites); 
+        ArrayList<Integer>[] adj = getAdjList(numExams, prerequisites);
 
-        // ADD YOUR CODE HERE - ADD YOUR NAME / SECTION AT TOP OF FILE
-        return false;
+        int[] state = new int[numExams]; // 0 unvisited, 1 visiting, 2 visited
 
+        // dfs on each node
+        for (int i = 0; i < numExams; i++) {
+            if (state[i] == 0) {
+                //dfs logic for detecting cycles/cycle tree
+                Stack<Integer> stack = new Stack<>();
+                stack.push(i);
+
+                while (!stack.isEmpty()) {
+                    int current = stack.peek();
+
+                    if (state[current] == 0) {
+                        state[current] = 1; // arked as visiting
+
+                        boolean hasUnivistedChild = false;
+                        for (int neighbor : adj[current]) {
+                            if (state[neighbor] == 1) {
+                                return false; // implies finding a back edge-cycle
+                            } else if (state[neighbor] == 0) {
+                                stack.push(neighbor);
+                                hasUnivistedChild = true;
+                            }
+                        }
+
+                        if (!hasUnivistedChild) { // if no univisted childs, mark this node as visited
+                            state[current] = 2;
+                            stack.pop();
+                        }
+                    } else {
+                        // assumes already visiting or visited
+                        state[current] = 2;
+                        stack.pop();
+                    }
+                }
+            }
+        }
+        return true; // no cycles found
     }
 
 
@@ -166,7 +199,7 @@ class ProblemSolutions {
     public int numGroups(int[][] adjMatrix) {
         int numNodes = adjMatrix.length;
         Map<Integer,List<Integer>> graph = new HashMap();
-        int i = 0, j =0;
+        int i = 0, j = 0, k = 0;
 
         /*
          * Converting the Graph Adjacency Matrix to
@@ -192,7 +225,34 @@ class ProblemSolutions {
 
         // YOUR CODE GOES HERE - you can add helper methods, you do not need
         // to put all code in this method.
-        return -1;
+
+        Set<Integer> visited = new HashSet<>();
+        int groupCount = 0;
+
+        for (i = 0; i < numNodes; i++) {
+            if (!visited.contains(i)) {
+                dfs(i, graph, visited);
+                groupCount++; // implies new group been found
+            }
+        }
+        return groupCount;
     }
 
+    // helper dfs traversal method
+    private void dfs(int node, Map<Integer, List<Integer>> graph, Set<Integer> visited) {
+        Stack<Integer> stack = new Stack<>();
+        stack.push(node);
+
+        while (!stack.isEmpty()) {
+            int current = stack.pop();
+            if (!visited.contains(current)) {
+                visited.add(current);
+                for (int neighbor : graph.getOrDefault(current, new ArrayList<>())) {
+                    if (!visited.contains(neighbor)) {
+                        stack.push(neighbor);
+                    }
+                }
+            }
+        }
+    }
 }

@@ -1,6 +1,6 @@
 /******************************************************************
  *
- *   YOUR NAME / SECTION NUMBER
+ *   Francis Olakangil / Section 001
  *
  *   Note, additional comments provided throughout this source code
  *   is for educational purposes
@@ -27,7 +27,7 @@ public class Graph {
   // Constructor 
   public Graph(int numV) {
     numVertices = numV;
-    adjListArr = new LinkedList[numVertices];
+    adjListArr = new LinkedList[numVertices]; // not specifying type resulting in warning
     vertexValues = new ArrayList<>(numVertices);
 
     for (int i = 0; i < numVertices; i++) {
@@ -103,8 +103,33 @@ public class Graph {
    */
   
   public int findRoot() {
+    int[] inDegrees = new int[numVertices];
 
-    // ADD YOUR CODE HERE - DO NOT FORGET TO ADD YOUR NAME/SECTION AT TOP OF FILE
-    return -1;
+    // counting incoming edges for each vertex
+    for (int source = 0;source < numVertices; source++) {
+      for (int destination : adjListArr[source]) {
+        inDegrees[destination]++;
+      }
+    }
+
+    int rootIndex = -1;
+
+    // getting vertex with no incoming edges
+    for (int i = 0; i < numVertices; i++) {
+      if (inDegrees[i] == 0) {
+        if (rootIndex == -1) {
+          rootIndex = i; // implies getting first root possibility
+        } else {
+          return -1; // implies more than one vertex with 0 inDegree
+        }
+      }
+    }
+
+    // returning value of root vertex, -1 if none found
+    if (rootIndex == -1) {
+      return -1;
+    } else {
+      return vertexValues.get(rootIndex);
+    }
   } 
 }
